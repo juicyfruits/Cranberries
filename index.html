@@ -1,0 +1,95 @@
+<!doctype html >
+<html>
+
+	<head>
+		<meta charset="utf-8" >
+		<meta name="viewport" content="width=device-width, initial-scale=1" >
+
+		<title>Such a Cropper</title>
+
+		<style>
+		
+			.ghost {
+				width: 50%;
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				margin-top: -25%;
+				margin-left: -25%;
+				background: pink;
+			}
+
+			.ghost::before {
+				content: "";
+				padding-top: 100%;
+				display: block;	
+			}
+			
+			#box {	
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				top: 0;
+				left: 0;
+				background: black;
+			}
+				
+			.consoleDump {
+				width: 100%;
+				position: fixed;
+				font-family: Courier;
+				font-size: 14pt;
+				color: red;
+				user-select: none;	
+			}
+		
+		</style>
+		
+		<script type="text/javascript">
+		
+		window.onload = function( ) {
+
+			var ghost = document.querySelector( '.ghost' ),
+			    box = document.querySelector( '#box' ),
+			    cnsl = document.querySelector( '.consoleDump' ),
+			    polyArray = [];
+
+//CROPPER PART
+			box.addEventListener( 'touchstart', function( evnt ){
+				cnsl.innerText = parseInt( evnt.touches[ 0 ].clientX ) + " " + parseInt( evnt.touches[ 0 ].clientY );
+			}, false );
+
+			ghost.addEventListener( 'click', function( evnt ){
+				
+				console.log( evnt );
+				cnsl.innerText = parseInt( evnt.offsetX ) + " " + parseInt( evnt.offsetY );
+				
+				polyArray.push( ( evnt.offsetX / evnt.target.clientWidth ) * 100, ( evnt.offsetY / evnt.target.clientHeight ) * 100 );
+				
+				var polygon = "polygon( "; //Building polygon propert
+				for ( var i in polyArray ) {	
+					polygon += polyArray[ i ] + "% ";
+					if ( !( ( parseInt( i ) + 1 ) % 2 ) ) {
+						if ( ( parseInt( i ) + 1 ) != polyArray.length )
+							polygon += ", ";
+						else 
+							polygon += " )";
+					}
+				}
+				cnsl.innerText = polygon;
+				if ( polyArray.length >= 6 ) //when min 3 points selected then apply clippig
+					box.style.webkitClipPath = polygon; 
+			}, false );
+		
+		</script>
+
+	</head>
+
+	<body>
+
+		<div id="box" ></div>	
+		<span class="consoleDump" ></span>			
+	
+	</body>
+
+</html>
